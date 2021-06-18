@@ -1,15 +1,21 @@
-[![polkadotjs](https://img.shields.io/badge/polkadot-js-orange?style=flat-square)](https://polkadot.js.org)
-![license](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)
-[![npm](https://img.shields.io/npm/v/@polkadot/react-identicon?logo=npm&style=flat-square)](https://www.npmjs.com/package/@polkadot/react-identicon)
-[![beta](https://img.shields.io/npm/v/@polkadot/react-identicon/beta?label=beta&logo=npm&style=flat-square)](https://www.npmjs.com/package/@polkadot/react-identicon)
-[![maintainability](https://img.shields.io/codeclimate/maintainability-percentage/polkadot-js/ui?logo=code-climate&style=flat-square)](https://codeclimate.com/github/polkadot-js/ui)
-[![coverage](https://img.shields.io/codeclimate/coverage/polkadot-js/ui?logo=code-climate&style=flat-square)](https://codeclimate.com/github/polkadot-js/ui)
+# @reef-defi/ui-examples
 
-# @polkadot/ui
+Basic browser and framework agnostic UI components for creating apps on the Reef Chain based on
+[@polkadot-js/ui](https://github.com/polkadot-js/ui).
 
-Basic browser and framework agnostic UI components for creating apps using the polkadot{.js} libraries
+## Installation
 
-## overview
+Install dependencies with `yarn`.
+
+## Examples
+
+A single file React example for EVM contract interaction can be run with:
+
+- [example-react](packages/example-react) - start with `yarn example:react` and view on `http://localhost:8080`
+
+It showcases the most used APIs.
+
+## Overview
 
 The following UI components are currently available -
 
@@ -25,10 +31,3 @@ Additionally some shared libraries, that is not dependent on any framework -
 - [ui-settings](packages/ui-settings/) A browser local storage wrapper for app settings & configuration
 - [ui-shared](packages/ui-shared) Shared logic that is used accross UI components, e.g. for icon generation
 
-## examples
-
-In addition to the above packages, there are examples available for intergation  of `ui-keyring`, `ui-settings` & the relevant `*-identicon` package. These are
-
-- [example-react](packages/example-react) - start with `yarn example:react` and view on `http://localhost:8080`
-- [example-reactnative](packages/exampleReactNative) - start with `yarn example:rn:packager` to start the packager service and then either `yarn example:rn:android` or `yarn example:rn:ios` in another terminal
-- [example-vue](packages/example-vue) - start with `yarn example:vue` and view on `http://localhost:8080`
