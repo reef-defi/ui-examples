@@ -1,0 +1,61 @@
+<ng-container *ngIf="reefApiService.evmProvider$|async; else noProvider">
+  <h1>Balance</h1>
+  <ng-container *ngIf="balance$|async as balance">
+    <p>free: {{balance.free}}</p>
+    <p>frozen: {{balance.frozen}}</p>
+    <p>reserved: {{balance.reserved}}</p>
+  </ng-container>
+  <h1>EVM Contract Interaction</h1>
+  <ng-container *ngIf="reefApiService.availableAccounts$ | async as accounts">
+    <select *ngIf="accounts.length else noAccounts"
+            (change)="selectedAccountIdSubject.next(findByAddress(accounts, $event.target))">
+      <option *ngFor="let acc of accounts" [value]="acc.address">{{acc.name}} // {{acc.address}}</option>
+    </select>
+
+
+    <ng-template #noAccounts>
+      No account to display.
+    </ng-template>
+
+    <div>
+      <p>
+        EVM address:
+        <ng-container *ngIf="(selectedAccount$|async) as selectedAcc; else noAccSelected">
+          {{selectedAcc.evmAddress}}
+        </ng-container>
+        <ng-template #noAccSelected>
+          No account selected.
+        </ng-template>
+      </p>
+    </div>
+
+    <div>
+      <p>
+        Example of interaction with Flipper contract ({{flipperContractAddressTestnet}})<br/>
+
+        Current value:
+        <strong>
+          <ng-container *ngIf="(flipperValue$|async) !== null">
+            <ng-container *ngIf="(flipperValue$|async) === LOADING; else loaded">loading ...</ng-container>
+            <ng-template #loaded> {{flipperValue$|async}}</ng-template>
+          </ng-container>
+          <span *ngIf="(flipperValue$|async)===null">not called yet</span>
+        </strong>
+      </p>
+      <button (click)="refreshFlipperValue.next(true)">refresh value</button>
+      <br/>
+      <button (click)="flipFlipperValue.next(true)">flip value</button>
+    </div>
+    <h1>Substrate account generation example</h1>
+    <button (click)="generateAddress.next(true)">generate address</button>
+    <ng-container *ngIf="phrase_address$|async as phrase_addr">
+      <p>
+        phrase: <textarea cols="40" readOnly rows="4">{{phrase_addr.phrase}}</textarea><br/>
+        address: {{phrase_addr.address}}
+      </p>
+    </ng-container>
+  </ng-container>
+</ng-container>
+<ng-template #noProvider>
+  <h1>Initializing ...</h1>
+</ng-template>
