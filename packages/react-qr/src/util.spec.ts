@@ -23,7 +23,7 @@ describe('util', (): void => {
     });
 
     it('decodes into string', (): void => {
-      expect(str).toHaveLength(u8a.length);
+      expect(str).toHaveSize(u8a.length);
     });
 
     it('have encode <-> decode', (): void => {

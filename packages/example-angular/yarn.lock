@@ -16501,9 +16501,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"reef-polka-module@workspace:.":
+"reef-angular-example@workspace:.":
   version: 0.0.0-use.local
-  resolution: "reef-polka-module@workspace:."
+  resolution: "reef-angular-example@workspace:."
   dependencies:
     "@angular-devkit/build-angular": ~12.0.2
     "@angular/animations": ~12.0.2

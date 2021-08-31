@@ -6,6 +6,9 @@
   "author": "Reef Finance",
   "maintainers": [],
   "license": "Apache-2.0",
+  "scripts": {
+    "build": "polkadot-dev-build-ts"
+  },
   "dependencies": {
     "@babel/runtime": "^7.14.5"
   }
