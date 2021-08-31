@@ -12,6 +12,7 @@ Install dependencies with `yarn`.
 A single file React example for EVM contract interaction can be run with:
 
 - [example-react](packages/example-react) - start with `yarn example:react` and view on `http://localhost:8080`
+- [example-angular](packages/example-angular) - cd inside `packages/example-angular` then `yarn install`, `ng serve` and view on `http://localhost:4200`
 
 It showcases the most used APIs.
 
