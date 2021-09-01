@@ -1,20 +1,10 @@
-// Copyright 2017-2021 @polkadot/example-react authors & contributors
-// SPDX-License-Identifier: Apache-2.0
-
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-import { options } from '@reef-defi/api';
-import { ApiPromise } from '@polkadot/api/promise';
 import { WsProvider } from '@polkadot/rpc-provider';
-import { TypeRegistry } from '@polkadot/types';
 import { InjectedExtension } from '@polkadot/extension-inject/types';
 import { Provider, Signer as EvmSigner } from '@reef-defi/evm-provider';
 import { ethers } from 'ethers';
-
-import type { Signer, SignerResult } from '@polkadot/api/types';
-import type { KeyringPair } from '@polkadot/keyring/types';
-import type { Registry, SignerPayloadJSON } from '@polkadot/types/types';
 
 import { Identicon } from '@polkadot/react-identicon';
 import { keyring } from '@polkadot/ui-keyring';
@@ -26,9 +16,6 @@ import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 interface Props {
   className?: string;
 }
-
-const injectedPromise = web3Enable('@reef-defi/ui-example');
-let api: ApiPromise;
 
 interface InjectedAccountExt {
   address: string;
@@ -80,29 +67,9 @@ if (!rootElement) {
   throw new Error("Unable to find element with id 'example'");
 }
 
-// Polkadot.js signer
-let id = 0;
-export class TestingSigner implements Signer {
-  readonly #keyringPair: KeyringPair;
-  readonly #registry: Registry;
-
-  constructor(registry: Registry, keyringPair: KeyringPair) {
-    this.#keyringPair = keyringPair;
-    this.#registry = registry;
-  }
-
-  public async signPayload(payload: SignerPayloadJSON): Promise<SignerResult> {
-    return new Promise((resolve): void => {
-      const signed = this.#registry.createType('ExtrinsicPayload', payload, { version: payload.version }).sign(this.#keyringPair);
-
-      resolve({ id: ++id, ...signed });
-    });
-  }
-}
-
 function App({ className }: Props): React.ReactElement<Props> | null {
   // API connectivity
-  const url = 'wss://rpc-testnet.reefscan.com/ws';
+  const URL = 'wss://rpc-testnet.reefscan.com/ws';
   const [isApiConnected, setIsApiConnected] = useState(false);
   const [isApiInitialized, setIsApiInitialized] = useState(false);
 
@@ -120,38 +87,33 @@ function App({ className }: Props): React.ReactElement<Props> | null {
   const flipperContractAddressTestnet = '0x6252dC9516792DE316694D863271bd25c07E621B';
   const [flipperValue, setFlipperValue] = useState('not called yet');
 
-  // Substrate generation example
-  const [address, setAddress] = useState<string | null>(null);
-  const [phrase, setPhrase] = useState<string | null>(null);
-  const ss58Format = 42;
-
+  // DROPDOWN ACCOUNT SELECTION
   const _onChangeAccountId = useCallback(({ currentTarget: { value } }: React.SyntheticEvent<HTMLSelectElement>): void => {
     setAccountId(value);
   }, []);
 
-  // Call Flipper get() function (view only, no funds are expended)
+  // FLIPPER GET(): Call Flipper get() function (view only, no funds are expended)
   const _onClickGetContractValue = useCallback(async (): Promise<void> => {
     if (!evmProvider || !accountId) return;
 
     const wallet = new EvmSigner(evmProvider as Provider, accountId, accountSigner);
+    let ercContract = new ethers.Contract(flipperContractAddressTestnet as string, FlipperAbi as any, wallet);
 
-    let ercContract = new ethers.Contract(flipperContractAddressTestnet as string, FlipperAbi as any);
-    const value = await ercContract.connect(wallet as any)['get()']();
+    const value = await ercContract.get();
 
     console.log('Value: ', value);
     setFlipperValue(value.toString());
   }, [evmProvider, accountId]);
 
-  // Call Flipper flip() function (the value will be swapped, funds are expended)
+  // FLIPPER FLIP(): Call Flipper flip() function (the value will be swapped, funds are expended)
   const _onClickFlipContractValue = useCallback(async (): Promise<void> => {
     if (!evmProvider || !accountId) return;
 
     const wallet = new EvmSigner(evmProvider as Provider, accountId, accountSigner);
-
-    let ercContract = new ethers.Contract(flipperContractAddressTestnet as string, FlipperAbi as any);
+    let ercContract = new ethers.Contract(flipperContractAddressTestnet as string, FlipperAbi as any, wallet);
 
     try {
-      const result = await ercContract.connect(wallet as any)['flip()']();
+      const result = await ercContract.flip();
 
       alert(`Value was flipped! TX: ${result.toString()}`);
       console.log('Result: ', result);
@@ -178,21 +140,20 @@ function App({ className }: Props): React.ReactElement<Props> | null {
   }, [accountId]);
 
   useEffect((): void => {
-    const provider = new WsProvider(url);
-    const registry = new TypeRegistry();
+    // Polkadot.js extension initialization as per https://polkadot.js.org/docs/extension/usage/
+    const injectedPromise = web3Enable('@reef-defi/ui-example');
 
-    const apiOptions = options({
-      provider,
-      registry
+    const evmProvider = new Provider({
+      provider: new WsProvider(URL)
     });
+    setEvmProvider(evmProvider);
 
-    api = new ApiPromise(apiOptions);
+    evmProvider.api.on('connected', () => setIsApiConnected(true));
+    evmProvider.api.on('disconnected', () => setIsApiConnected(false));
 
-    api.on('connected', () => setIsApiConnected(true));
-    api.on('disconnected', () => setIsApiConnected(false));
-    api.on('ready', async (): Promise<void> => {
+    // Populate account dropdown with all accounts when API is ready
+    evmProvider.api.on('ready', async (): Promise<void> => {
       try {
-        // Populate account dropdown with all accounts
         await injectedPromise
           .then(() => web3Accounts())
           .then((accounts) =>
@@ -221,33 +182,27 @@ function App({ className }: Props): React.ReactElement<Props> | null {
       }
     });
 
-    // Setup EVM provider
+    // Setup Polkadot.js signer
     injectedPromise
-      .then((extensions) => {
+      .then(async (extensions) => {
         setExtensions(extensions);
         setAccountSigner(extensions[0]?.signer);
-        setEvmProvider(
-          new Provider(
-            options({
-              provider,
-              registry,
-              signer: new TestingSigner(registry, extensions[0]?.signer as any)
-            })
-          )
-        );
       })
       .catch((error) => console.error(error));
 
     setIsApiInitialized(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Substrate account generation
+  // ------- SUBSTRATE ACCOUNT GENERATION -------
+  const [address, setAddress] = useState<string | null>(null);
+  const [phrase, setPhrase] = useState<string | null>(null);
+  const SS58_FORMAT = 42;
+
   const _onClickNew = useCallback((): void => {
     const phrase = mnemonicGenerate(12);
     const { address } = keyring.createFromUri(phrase);
 
-    setAddress(keyring.encodeAddress(address, ss58Format));
+    setAddress(keyring.encodeAddress(address, SS58_FORMAT));
     setPhrase(phrase);
   }, []);
 
@@ -257,7 +212,7 @@ function App({ className }: Props): React.ReactElement<Props> | null {
   }, []);
 
   useEffect((): void => {
-    address && setAddress(keyring.encodeAddress(address, ss58Format));
+    address && setAddress(keyring.encodeAddress(address, SS58_FORMAT));
   }, [address]);
 
   if (!address || !phrase) {
