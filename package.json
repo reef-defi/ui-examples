@@ -52,6 +52,7 @@
     "@reef-defi/evm-provider": "^0.1.9",
     "@reef-defi/type-definitions": "^0.1.6",
     "@reef-defi/types": "^0.1.6",
-    "babel-loader": "^8.2.2"
+    "babel-loader": "^8.2.2",
+    "typescript": "4.2.3"
   }
 }
