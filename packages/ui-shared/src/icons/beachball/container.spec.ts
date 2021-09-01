@@ -8,7 +8,7 @@ describe('container', (): void => {
     expect(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
       (container(100).style as any)._values
-    ).toMatchObject({
+    ).toEqual({
       background: 'white',
       'border-radius': '50px',
       display: 'inline-block',
@@ -24,7 +24,7 @@ describe('container', (): void => {
     expect(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
       (container(50, 'black', '', { display: 'block' }).style as any)._values
-    ).toMatchObject({
+    ).toEqual({
       background: 'black',
       'border-radius': '25px',
       display: 'block',

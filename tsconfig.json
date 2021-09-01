@@ -1,6 +1,6 @@
 {
   "extends": "@polkadot/dev/config/tsconfig.json",
-  "exclude": ["build/**/*", "**/build/**/*"],
+  "exclude": ["build/**/*", "**/build/**/*", "packages/example-angular"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
