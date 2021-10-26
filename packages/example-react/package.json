@@ -1,6 +1,6 @@
 {
   "name": "@reef-defi/ui-example-react",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A very basic example with ui-* & react-* packages",
   "main": "index.js",
   "author": "Reef Finance",
