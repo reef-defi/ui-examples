@@ -57,6 +57,7 @@
     "@reef-defi/api": "^1.0.1",
     "@reef-defi/api-derive": "^1.0.1",
     "@reef-defi/type-definitions": "^1.0.1",
-    "@reef-defi/types": "^1.0.1"
+    "@reef-defi/types": "^1.0.1",
+    "typescript": "4.2.3"
   }
 }
