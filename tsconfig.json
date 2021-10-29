@@ -19,7 +19,13 @@
       "@polkadot/ui-shared": ["packages/ui-shared/src"],
       "@polkadot/ui-shared/*": ["packages/ui-shared/src/*"],
       "@polkadot/vue-identicon": ["packages/vue-identicon/src"],
-      "@polkadot/vue-identicon/*": ["packages/vue-identicon/src/*"]
+      "@polkadot/vue-identicon/*": ["packages/vue-identicon/src/*"],
+      "crypto": [
+        "node_modules/crypto-browserify"
+      ],
+      "stream": [
+        "node_modules/stream-browserify"
+      ]
     },
     "noUnusedLocals": false,
     "skipLibCheck": true,
