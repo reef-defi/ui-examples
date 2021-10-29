@@ -69,7 +69,7 @@ function Display ({ className, size, skipEncoding, style, value }: Props): React
         timerRef.current.timerDelay = timerRef.current.timerDelay + TIMER_INC;
       }
 
-      timerRef.current.timerId = setTimeout(nextFrame, timerRef.current.timerDelay);
+      timerRef.current.timerId = window.setTimeout(nextFrame, timerRef.current.timerDelay);
 
       // only encode the frames on demand, not above as part of the
       // state derivation - in the case of large payloads, this should
