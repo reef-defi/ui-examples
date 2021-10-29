@@ -22,9 +22,9 @@
     ],
     "paths": {
       "crypto": [
-        "node_modules/crypto-js"
+        "./../../node_modules/crypto-browserify"
       ],
-      "stream": ["./node_modules/readable-stream"]
+      "stream": ["./../../node_modules/stream-browserify"]
     }
   },
   "angularCompilerOptions": {
