@@ -1,8 +1,7 @@
 // Copyright 2017-2021 @polkadot/ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-const base = require('@polkadot/dev/config/babel-config-cjs.cjs');
-
+const base = require('@polkadot/dev/config/babel-config-webpack.cjs');
 module.exports = Object.keys(base).reduce((config, key) => {
   config[key] = base[key];
 

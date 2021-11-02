@@ -83,6 +83,10 @@ export class ReefApiService {
     console.log('Connecting to Polkadot extension...');
     const inj = await web3Enable(appName);
 
+    if(!inj||inj.length<1){
+      const accs = await web3Accounts();
+      console.log('polkadot plugin inj=',inj, accs)
+    }
     this.ensure(inj.length > 0, 'Polkadot extension is disabled! You need to approve the app in Polkadot-extension!');
 
     console.log('Retrieving accounts...');
