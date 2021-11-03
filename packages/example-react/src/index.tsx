@@ -1,14 +1,8 @@
 // [object Object]
 // SPDX-License-Identifier: Apache-2.0
 // eslint-disable-next-line header/header
-import { ApolloClient, ApolloLink, ApolloProvider, gql, HttpLink, InMemoryCache, split, useSubscription } from '@apollo/client';
-/// /
-/// /
-// [object Object]
-// SPDX-License-Identifier: Apache-2.0
+import { ApolloProvider } from '@apollo/client';
 // eslint-disable-next-line header/header,import/no-duplicates
-import { WebSocketLink } from '@apollo/client/link/ws';
-import { getMainDefinition } from '@apollo/client/utilities';
 import { Provider, Signer as EvmSigner } from '@reef-defi/evm-provider';
 import { ethers } from 'ethers';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -20,6 +14,8 @@ import { Identicon } from '@polkadot/react-identicon';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { keyring } from '@polkadot/ui-keyring';
 import { cryptoWaitReady, mnemonicGenerate } from '@polkadot/util-crypto';
+import { ContractEventsComponent } from './components/ContractEvents';
+import { apolloClientInstance } from './apolloConfig';
 
 interface Props {
   className?: string;
@@ -68,38 +64,6 @@ const FlipperAbi = [
     type: 'function'
   }
 ];
-
-// APOLLO GQL
-const httpLink = new HttpLink({
-  uri: 'https://dev.reef.polkastats.io/api/v3'
-});
-
-const wsLink = new WebSocketLink({
-  options: {
-    reconnect: true
-  },
-  uri: 'wss://dev.reef.polkastats.io/api/v3'
-});
-
-const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    );
-  },
-  wsLink,
-  httpLink
-);
-
-export const apolloClientInstance = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: ApolloLink.from([splitLink])
-});
-
-// APOLLLO GQL end
 
 const rootElement = document.getElementById('example');
 
@@ -334,12 +298,13 @@ function App ({ className }: Props): React.ReactElement<Props> | null {
         {address}
       </section>
       <section>
-        <label>gql</label>
+        <label>GraphQL</label>
         {!!apolloClientInstance &&
           <ApolloProvider client={apolloClientInstance}>
             <ContractEventsComponent
+              contractAddress='0x0000000000000000000000000000000001000000'
               offset={0}
-              perPage={10}
+              perPage={100}
             ></ContractEventsComponent>
           </ApolloProvider>}
       </section>
@@ -353,86 +318,3 @@ cryptoWaitReady()
     ReactDOM.render(<App />, rootElement);
   })
   .catch(console.error);
-
-interface ContractEventsComponent {
-  blockNumber?: BigInt;
-  contractId?: string;
-  perPage: number;
-  offset: number;
-}
-// 0x9e70065271f1dc701c10033b1e4b99c5d30d170a
-const addrjson=  JSON.stringify([{'address' : '0x9e70065271f1dc701c10033b1e4b99c5d30d170a'}]);
-
-console.log('qqq=', `
-          subscription events(
-            $blockNumber: bigint
-            $perPage: Int!
-            $offset: Int!
-          ) {
-            event(
-              limit: $perPage
-              offset: $offset
-              where: {section: { _eq: "evm" }, method: { _eq: "Log" },
-              data: {_like: "[{\"address\" : \"0x9e70065271f1dc701c10033b1e4b99c5d30d170a\"}]"}
-              }
-              order_by: { block_number: desc, event_index: desc }
-            ) {
-              block_number
-              event_index
-              data
-              method
-              phase
-              section
-              timestamp
-            }
-          }
-        `);
-const CONTRACT_EVENTS = gql`
-          subscription events(
-            $blockNumber: bigint
-            $perPage: Int!
-            $offset: Int!
-          ) {
-            event(
-              limit: $perPage
-              offset: $offset
-              where: {section: { _eq: "evm" }, method: { _eq: "Log" },
-              data: {_like: "[{\"address\":\"0xc0d38f34a678009bce84f2b06145ee0256ec100a\"}]"}
-              }
-              order_by: { block_number: desc, event_index: desc }
-            ) {
-              block_number
-              event_index
-              data
-              method
-              phase
-              section
-              timestamp
-            }
-          }
-        `;
-
-function parseEvents (event: { data: string, address: string, topics: string[] }) {
-  const dataVal = 'dfdsa'
-}
-
-const ContractEventsComponent = function ({ blockNumber, contractId, offset, perPage }: ContractEventsComponent): JSX.Element {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { data, loading } = useSubscription(
-    CONTRACT_EVENTS,
-    // eslint-disable-next-line sort-keys
-    { variables: { offset:0, perPage: 100 } }
-  );
-
-  useEffect(() => {
-    console.log('EVVV11', data, loading);
-    const dataVal = data ? parseEvents(data.event) : [];
-  }, [data, loading]);
-
-
-  // eslint-disable-next-line react/react-in-jsx-scope
-  return (<div>
-    loading={loading?.toString()}
-    CON EEE {data?.length}
-  </div>);
-};
