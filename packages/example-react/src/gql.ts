@@ -53,25 +53,6 @@ export const REEF_TRANSFERS_GQL = gql`
           }
         `;
 
-export const ACCOUNT_TOKENS_GQL = gql`
-          subscription token_holder($accountId: String!) {
-            token_holder(
-              where: { holder_account_id: { _eq: $accountId } }
-              order_by: { balance: desc }
-          ) {
-              contract_id
-              holder_account_id
-              holder_evm_address
-              balance
-              contract {
-                token_decimals
-                token_name
-                token_symbol
-              }
-            }
-          }
-        `;
-
 export const TOKEN_BALANCES_GQL = gql`
           subscription tokenHolders(
             $contractId: String!

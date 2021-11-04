@@ -6,6 +6,7 @@ import { BigNumber, ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 
 import { CONTRACT_EVENTS_GQL, REEF_TRANSFERS_GQL } from '../gql';
+import { toFixedBigExponent } from '../util';
 
 interface ReefTransfers {
   address: string|undefined;
@@ -29,7 +30,7 @@ export const ReefCoinTransfers = function ({ address, blockNumber, offset, perPa
       return (<div key={i}>from: {t.source} <br />
         to: {t.destination}
         <br />
-        value:  {ethers.utils.formatEther(BigNumber.from(t.amount.toString()))} REEF
+        value:  {ethers.utils.formatEther(BigNumber.from(toFixedBigExponent(t.amount)))} REEF
         <br />
         <br />
       </div>);
