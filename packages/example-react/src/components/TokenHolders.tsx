@@ -28,9 +28,6 @@ export const TokenHolders = function ({ contractId, offset, perPage }: TokenHold
     // eslint-disable-next-line sort-keys
     { variables: { offset, perPage, contractId} }
   );
-  useEffect(() => {
-    console.log('HOLDERs=', holders, loading);
-  }, [holders, loading]);
 
   // eslint-disable-next-line react/react-in-jsx-scope
   return (<div>
