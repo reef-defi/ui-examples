@@ -16,6 +16,8 @@ import { keyring } from '@polkadot/ui-keyring';
 import { cryptoWaitReady, mnemonicGenerate } from '@polkadot/util-crypto';
 import { ContractEventsComponent } from './components/ContractEvents';
 import { apolloClientInstance } from './apolloConfig';
+import { ReefCoinTransfers } from './components/ReefCoinTransfers';
+import { TokenHolders } from './components/TokenHolders';
 
 interface Props {
   className?: string;
@@ -94,6 +96,7 @@ function App ({ className }: Props): React.ReactElement<Props> | null {
 
   // DROPDOWN ACCOUNT SELECTION
   const _onChangeAccountId = useCallback(({ currentTarget: { value } }: React.SyntheticEvent<HTMLSelectElement>): void => {
+    value.
     setAccountId(value);
   }, []);
 
@@ -304,8 +307,14 @@ function App ({ className }: Props): React.ReactElement<Props> | null {
             <ContractEventsComponent
               contractAddress='0x0000000000000000000000000000000001000000'
               offset={0}
-              perPage={100}
+              perPage={10}
             ></ContractEventsComponent>
+
+            <ReefCoinTransfers address={accountId}
+                               offset={0}
+                               perPage={10}></ReefCoinTransfers>
+
+            <TokenHolders contractId="0xF7108a2737687f3780D7846852DEd6A75fADaC01" perPage={5} offset={0}></TokenHolders>
           </ApolloProvider>}
       </section>
     </div>

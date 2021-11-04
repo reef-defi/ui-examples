@@ -25,7 +25,6 @@ interface ParsedEvent {
 const transferAbi = ['event Transfer(address indexed from, address indexed to, uint value)'];
 
 function parseLogData (eventJson: string, abi: string[]): ethers.utils.LogDescription | undefined {
-  // console.log('parse=', event);
   const eventLogJson: {topics: string[], data: string}[] = JSON.parse(eventJson);
 
   try {
@@ -44,7 +43,7 @@ export const ContractEventsComponent = function ({ abi, blockNumber, contractAdd
   const { data: eventsRes, loading } = useSubscription(
     CONTRACT_EVENTS_GQL,
     // eslint-disable-next-line sort-keys
-    { variables: { offset, perPage, blockNumber, addressFilter: contractAddress ? `[{"address":"${contractAddress}"%` : '[{%' } }
+    { variables: { offset, perPage, blockNumber, contractAddressFilter: contractAddress ? `[{"address":"${contractAddress}"%` : '[{%' } }
   );
   const [events, setEvents] = useState<ethers.utils.LogDescription>([]);
 
