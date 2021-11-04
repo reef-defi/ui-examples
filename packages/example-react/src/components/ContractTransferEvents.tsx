@@ -7,10 +7,9 @@ import React, { useEffect, useState } from 'react';
 
 import { CONTRACT_EVENTS_GQL } from '../gql';
 
-interface ContractEventsComponent {
+interface ContractEvents {
   blockNumber?: BigInt;
   contractAddress: string;
-  abi: string[];
   perPage: number;
   offset: number;
 }
@@ -38,7 +37,7 @@ function parseLogData (eventJson: string, abi: string[]): ethers.utils.LogDescri
   return undefined;
 }
 
-export const ContractEventsComponent = function ({ abi, blockNumber, contractAddress, offset, perPage }: ContractEventsComponent): JSX.Element {
+export const ContractTransferEvents = function ({ blockNumber, contractAddress, offset, perPage }: ContractEvents): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { data: eventsRes, loading } = useSubscription(
     CONTRACT_EVENTS_GQL,
@@ -49,9 +48,9 @@ export const ContractEventsComponent = function ({ abi, blockNumber, contractAdd
 
   useEffect(() => {
     const { event } = eventsRes || {};
-    const parsedEventData = event?.length ? event.map((e) => parseLogData(e.data, abi || transferAbi)) : [];
+    const parsedEventData = event?.length ? event.map((e) => parseLogData(e.data, transferAbi)).filter((ped) => !!ped) : [];
 
-    setEvents(parsedEventData.filter((ped) => !!ped));
+    setEvents(parsedEventData);
   }, [eventsRes]);
 
   // eslint-disable-next-line react/react-in-jsx-scope

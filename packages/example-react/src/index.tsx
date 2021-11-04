@@ -14,7 +14,7 @@ import { Identicon } from '@polkadot/react-identicon';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { keyring } from '@polkadot/ui-keyring';
 import { cryptoWaitReady, mnemonicGenerate } from '@polkadot/util-crypto';
-import { ContractTransferEventsComponent } from './components/ContractEvents';
+import { ContractTransferEvents } from './components/ContractTransferEvents';
 import { apolloClientInstance } from './apolloConfig';
 import { ReefCoinTransfers } from './components/ReefCoinTransfers';
 import { TokenBalances } from './components/TokenBalances';
@@ -304,11 +304,11 @@ function App ({ className }: Props): React.ReactElement<Props> | null {
         <label>GraphQL</label>
         {!!apolloClientInstance &&
           <ApolloProvider client={apolloClientInstance}>
-            <ContractTransferEventsComponent
+            <ContractTransferEvents
               contractAddress='0x0000000000000000000000000000000001000000'
               offset={0}
               perPage={10}
-            ></ContractTransferEventsComponent>
+            ></ContractTransferEvents>
 
             <ReefCoinTransfers address={accountId}
                                offset={0}
