@@ -1,18 +1,11 @@
 // [object Object]
 // SPDX-License-Identifier: Apache-2.0
 
+// eslint-disable-next-line header/header
 import { useSubscription } from '@apollo/client';
-import { BigNumber, ethers } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import {
-  CONTRACT_EVENTS_GQL,
-  REEF_TRANSFERS_GQL,
-  TOKEN_BALANCES_GQL,
-  TOKEN_HOLDERS_SUBS_ADDR_GQL,
-  TOKEN_HOLDERS_NATIVE_ACCOUNT_GQL
-} from '../gql';
-import { of } from 'rxjs';
+import { TOKEN_BALANCES_GQL } from '../gql';
 
 interface AccountTokens {
   address?: string;
@@ -25,13 +18,13 @@ export const AccountTokens = function ({ address, offset, perPage }: AccountToke
   const { data: holders, loading } = useSubscription(
     TOKEN_BALANCES_GQL,
     // eslint-disable-next-line sort-keys
-    { variables: { offset, perPage, address} }
+    { variables: { offset, perPage, address } }
   );
 
   // eslint-disable-next-line react/react-in-jsx-scope
   return (<div>
     <h5>Tokens for address {address}</h5>
-    {holders?.token_holder.map((h, i) => {
+    {holders?.token_holder.map((h: {holder_evm_address:string, balance: number}, i: number) => {
       return (<div key={i}>account: {h.holder_evm_address} <br />
         balance: {h.balance}
         <br />

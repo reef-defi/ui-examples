@@ -1,6 +1,7 @@
 // [object Object]
 // SPDX-License-Identifier: Apache-2.0
 
+// eslint-disable-next-line header/header
 import { useSubscription } from '@apollo/client';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
@@ -44,11 +45,11 @@ export const ContractTransferEvents = function ({ blockNumber, contractAddress, 
     // eslint-disable-next-line sort-keys
     { variables: { offset, perPage, blockNumber, contractAddressFilter: contractAddress ? `[{"address":"${contractAddress}"%` : '[{%' } }
   );
-  const [events, setEvents] = useState<ethers.utils.LogDescription>([]);
+  const [events, setEvents] = useState<ethers.utils.LogDescription[]>([]);
 
   useEffect(() => {
     const { event } = eventsRes || {};
-    const parsedEventData = event?.length ? event.map((e) => parseLogData(e.data, transferAbi)).filter((ped) => !!ped) : [];
+    const parsedEventData = event?.length ? event.map((e: any) => parseLogData(e.data, transferAbi)).filter((v: any) => !!v) : [];
 
     setEvents(parsedEventData);
   }, [eventsRes]);

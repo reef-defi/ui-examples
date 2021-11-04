@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { CONTRACT_EVENTS_GQL, REEF_TRANSFERS_GQL } from '../gql';
 
 interface ReefTransfers {
-  address: string;
+  address: string|undefined;
   blockNumber?: BigInt;
   perPage: number;
   offset: number;
@@ -25,7 +25,7 @@ export const ReefCoinTransfers = function ({ address, blockNumber, offset, perPa
   // eslint-disable-next-line react/react-in-jsx-scope
   return (<div>
     <h5>Reef transfers for {address}</h5>
-    {transfers?.transfer.map((t, i) => {
+    {transfers?.transfer.map((t: any, i: number) => {
       return (<div key={i}>from: {t.source} <br />
         to: {t.destination}
         <br />

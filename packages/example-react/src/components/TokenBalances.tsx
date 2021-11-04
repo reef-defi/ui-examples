@@ -45,7 +45,7 @@ export const TokenBalances = function ({ accountAddress, contractId, offset, per
       {!accountAddress && `Token holders for ${contractId}` }
       {!!accountAddress && `Token balance for account ${accountAddress}`}
     </h5>
-    {balances?.token_holder.map((b, i) => {
+    {balances?.token_holder.map((b: any, i: number) => {
       return (<div key={i}>account: {b.holder_evm_address} <br />
         balance: {ethers.utils.formatEther(BigNumber.from(toFixedBigExponent(b.balance)))}
         <br />

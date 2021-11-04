@@ -96,7 +96,6 @@ function App ({ className }: Props): React.ReactElement<Props> | null {
 
   // DROPDOWN ACCOUNT SELECTION
   const _onChangeAccountId = useCallback(({ currentTarget: { value } }: React.SyntheticEvent<HTMLSelectElement>): void => {
-    value.
     setAccountId(value);
   }, []);
 
