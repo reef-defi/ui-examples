@@ -72,16 +72,17 @@ export const ACCOUNT_TOKENS_GQL = gql`
           }
         `;
 
-export const TOKEN_HOLDERS_GQL = gql`
+export const TOKEN_BALANCES_GQL = gql`
           subscription tokenHolders(
             $contractId: String!
+            $accountAddress: String!
             $perPage: Int!
             $offset: Int!
           ) {
             token_holder(
               limit: $perPage
               offset: $offset
-              where: {contract_id: { _eq: $contractId } }
+              where: {contract_id: { _eq: $contractId }, holder_evm_address: { _like: $accountAddress } }
               order_by: { block_height: desc }
             ) {
               contract_id

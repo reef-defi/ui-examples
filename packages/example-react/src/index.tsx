@@ -14,10 +14,10 @@ import { Identicon } from '@polkadot/react-identicon';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { keyring } from '@polkadot/ui-keyring';
 import { cryptoWaitReady, mnemonicGenerate } from '@polkadot/util-crypto';
-import { ContractEventsComponent } from './components/ContractEvents';
+import { ContractTransferEventsComponent } from './components/ContractEvents';
 import { apolloClientInstance } from './apolloConfig';
 import { ReefCoinTransfers } from './components/ReefCoinTransfers';
-import { TokenHolders } from './components/TokenHolders';
+import { TokenBalances } from './components/TokenBalances';
 
 interface Props {
   className?: string;
@@ -304,17 +304,22 @@ function App ({ className }: Props): React.ReactElement<Props> | null {
         <label>GraphQL</label>
         {!!apolloClientInstance &&
           <ApolloProvider client={apolloClientInstance}>
-            <ContractEventsComponent
+            <ContractTransferEventsComponent
               contractAddress='0x0000000000000000000000000000000001000000'
               offset={0}
               perPage={10}
-            ></ContractEventsComponent>
+            ></ContractTransferEventsComponent>
 
             <ReefCoinTransfers address={accountId}
                                offset={0}
                                perPage={10}></ReefCoinTransfers>
 
-            <TokenHolders contractId="0xF7108a2737687f3780D7846852DEd6A75fADaC01" perPage={5} offset={0}></TokenHolders>
+            <TokenBalances contractId="0xF7108a2737687f3780D7846852DEd6A75fADaC01"
+                           accountAddress="0xc842BcD9c323584016b91DD6e9406F7083a0cd00"
+                           perPage={5} offset={0}></TokenBalances>
+
+            <TokenBalances contractId="0xF7108a2737687f3780D7846852DEd6A75fADaC01"
+                           perPage={5} offset={0}></TokenBalances>
           </ApolloProvider>}
       </section>
     </div>
