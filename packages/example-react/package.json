@@ -10,6 +10,9 @@
     "build": "polkadot-dev-build-ts"
   },
   "dependencies": {
-    "@babel/runtime": "^7.14.5"
+    "@apollo/client": "^3.4.16",
+    "@babel/runtime": "^7.14.5",
+    "graphql": "^16.0.0",
+    "subscriptions-transport-ws": "^0.9.19"
   }
 }

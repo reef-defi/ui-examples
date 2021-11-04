@@ -1,17 +1,23 @@
+// [object Object]
+// SPDX-License-Identifier: Apache-2.0
+// eslint-disable-next-line header/header
+import { ApolloProvider } from '@apollo/client';
+// eslint-disable-next-line header/header,import/no-duplicates
+import { Provider, Signer as EvmSigner } from '@reef-defi/evm-provider';
+import { ethers } from 'ethers';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-import { WsProvider } from '@polkadot/rpc-provider';
-import { InjectedExtension } from '@polkadot/extension-inject/types';
-import { Provider, Signer as EvmSigner } from '@reef-defi/evm-provider';
-import { ethers } from 'ethers';
-
-import { Identicon } from '@polkadot/react-identicon';
-import { keyring } from '@polkadot/ui-keyring';
-
-import { cryptoWaitReady, mnemonicGenerate } from '@polkadot/util-crypto';
-
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+import { InjectedExtension } from '@polkadot/extension-inject/types';
+import { Identicon } from '@polkadot/react-identicon';
+import { WsProvider } from '@polkadot/rpc-provider';
+import { keyring } from '@polkadot/ui-keyring';
+import { cryptoWaitReady, mnemonicGenerate } from '@polkadot/util-crypto';
+import { ContractTransferEvents } from './components/ContractTransferEvents';
+import { apolloClientInstance } from './apolloConfig';
+import { ReefCoinTransfers } from './components/ReefCoinTransfers';
+import { TokenBalances } from './components/TokenBalances';
 
 interface Props {
   className?: string;
@@ -64,10 +70,10 @@ const FlipperAbi = [
 const rootElement = document.getElementById('example');
 
 if (!rootElement) {
-  throw new Error("Unable to find element with id 'example'");
+  throw new Error('Unable to find element with id \'example\'');
 }
 
-function App({ className }: Props): React.ReactElement<Props> | null {
+function App ({ className }: Props): React.ReactElement<Props> | null {
   // API connectivity
   const URL = 'wss://rpc-testnet.reefscan.com/ws';
   const [isApiConnected, setIsApiConnected] = useState(false);
@@ -76,6 +82,7 @@ function App({ className }: Props): React.ReactElement<Props> | null {
   // Polkadot.js extension initialization
   const [extensions, setExtensions] = useState<InjectedExtension[] | undefined>();
   const [injectedAccounts, setInjectedAccounts] = useState<InjectedAccountExt[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const [accountSigner, setAccountSigner] = useState<any>(null);
 
   // EVM contract interaction
@@ -96,31 +103,35 @@ function App({ className }: Props): React.ReactElement<Props> | null {
   const _onClickGetContractValue = useCallback(async (): Promise<void> => {
     if (!evmProvider || !accountId) return;
 
-    const wallet = new EvmSigner(evmProvider as Provider, accountId, accountSigner);
-    let ercContract = new ethers.Contract(flipperContractAddressTestnet as string, FlipperAbi as any, wallet);
+    const wallet = new EvmSigner(evmProvider, accountId, accountSigner);
+    const ercContract = new ethers.Contract(flipperContractAddressTestnet as string, FlipperAbi as any, wallet);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
     const value = await ercContract.get();
 
     console.log('Value: ', value);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
     setFlipperValue(value.toString());
-  }, [evmProvider, accountId]);
+  }, [evmProvider, accountId, accountSigner]);
 
   // FLIPPER FLIP(): Call Flipper flip() function (the value will be swapped, funds are expended)
   const _onClickFlipContractValue = useCallback(async (): Promise<void> => {
     if (!evmProvider || !accountId) return;
 
-    const wallet = new EvmSigner(evmProvider as Provider, accountId, accountSigner);
-    let ercContract = new ethers.Contract(flipperContractAddressTestnet as string, FlipperAbi as any, wallet);
+    const wallet = new EvmSigner(evmProvider, accountId, accountSigner);
+    const ercContract = new ethers.Contract(flipperContractAddressTestnet as string, FlipperAbi as any, wallet);
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
       const result = await ercContract.flip();
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-template-expressions
       alert(`Value was flipped! TX: ${result.toString()}`);
       console.log('Result: ', result);
     } catch {
       alert('Value was not flipped! See console!');
     }
-  }, [evmProvider, accountId]);
+  }, [evmProvider, accountId, accountSigner]);
 
   // Obtain EVM address based on the accountId
   useEffect(() => {
@@ -137,7 +148,7 @@ function App({ className }: Props): React.ReactElement<Props> | null {
     } else {
       setEvmAddress('');
     }
-  }, [accountId]);
+  }, [accountId, evmProvider]);
 
   useEffect((): void => {
     // Polkadot.js extension initialization as per https://polkadot.js.org/docs/extension/usage/
@@ -146,6 +157,7 @@ function App({ className }: Props): React.ReactElement<Props> | null {
     const evmProvider = new Provider({
       provider: new WsProvider(URL)
     });
+
     setEvmProvider(evmProvider);
 
     evmProvider.api.on('connected', () => setIsApiConnected(true));
@@ -184,7 +196,7 @@ function App({ className }: Props): React.ReactElement<Props> | null {
 
     // Setup Polkadot.js signer
     injectedPromise
-      .then(async (extensions) => {
+      .then((extensions) => {
         setExtensions(extensions);
         setAccountSigner(extensions[0]?.signer);
       })
@@ -224,22 +236,30 @@ function App({ className }: Props): React.ReactElement<Props> | null {
       <h1>EVM contract interaction</h1>
       <section>
         <label>Account:</label>
-        <select onChange={_onChangeAccountId} value={accountId}>
+        <select
+          onChange={_onChangeAccountId}
+          value={accountId}
+        >
           {injectedAccounts.map(
             ({ address, meta: { name } }): React.ReactNode => (
-              <option key={address} value={address}>
+              <option
+                key={address}
+                value={address}
+              >
                 {name} ({address})
               </option>
             )
           )}
         </select>
-        <section>{!evmAddress && isApiInitialized ? <p>No EVM address is bound to this address. The requests will fail.</p> : <p>EVM address: {evmAddress}</p>}</section>
+        <section>{!evmAddress && isApiInitialized
+          ? <p>No EVM address is bound to this address. The requests will fail.</p>
+          : <p>EVM address: {evmAddress}</p>}</section>
       </section>
       <section>
         <i>Example of interaction with Flipper contract ({flipperContractAddressTestnet})</i>
 
         <section>
-          Current value: <b>{flipperValue}</b>
+            Current value: <b>{flipperValue}</b>
           <button onClick={_onClickGetContractValue}>Get value</button>
           <button onClick={_onClickFlipContractValue}>Flip value</button>
         </section>
@@ -251,17 +271,55 @@ function App({ className }: Props): React.ReactElement<Props> | null {
       </section>
       <section>
         <label>phrase</label>
-        <textarea cols={40} readOnly rows={4} value={phrase} />
+        <textarea
+          cols={40}
+          readOnly
+          rows={4}
+          value={phrase}
+        />
       </section>
       <section>
         <label>icons</label>
-        <Identicon className='icon' value={address} />
-        <Identicon className='icon' theme='polkadot' value={address} />
-        <Identicon className='icon' theme='beachball' value={address} />
+        <Identicon
+          className='icon'
+          value={address}
+        />
+        <Identicon
+          className='icon'
+          theme='polkadot'
+          value={address}
+        />
+        <Identicon
+          className='icon'
+          theme='beachball'
+          value={address}
+        />
       </section>
       <section>
         <label>address</label>
         {address}
+      </section>
+      <section>
+        <label>GraphQL</label>
+        {!!apolloClientInstance &&
+          <ApolloProvider client={apolloClientInstance}>
+            <ContractTransferEvents
+              contractAddress='0x0000000000000000000000000000000001000000'
+              offset={0}
+              perPage={10}
+            ></ContractTransferEvents>
+
+            <ReefCoinTransfers address={accountId}
+                               offset={0}
+                               perPage={10}></ReefCoinTransfers>
+
+            <TokenBalances contractId="0xF7108a2737687f3780D7846852DEd6A75fADaC01"
+                           accountAddress="0xc842BcD9c323584016b91DD6e9406F7083a0cd00"
+                           perPage={5} offset={0}></TokenBalances>
+
+            <TokenBalances contractId="0xF7108a2737687f3780D7846852DEd6A75fADaC01"
+                           perPage={5} offset={0}></TokenBalances>
+          </ApolloProvider>}
       </section>
     </div>
   );
