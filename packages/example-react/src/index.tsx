@@ -8,8 +8,8 @@ import { ethers } from 'ethers';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
-import { InjectedExtension } from '@polkadot/extension-inject/types';
+import { web3Accounts, web3Enable, web3FromSource } from '@reef-defi/extension-dapp';
+import { InjectedExtension } from '@reef-defi/extension-inject/types';
 import { Identicon } from '@polkadot/react-identicon';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { keyring } from '@polkadot/ui-keyring';
@@ -97,7 +97,17 @@ function App ({ className }: Props): React.ReactElement<Props> | null {
   // DROPDOWN ACCOUNT SELECTION
   const _onChangeAccountId = useCallback(({ currentTarget: { value } }: React.SyntheticEvent<HTMLSelectElement>): void => {
     setAccountId(value);
-  }, []);
+
+    const pair = injectedAccounts.filter((account) => account.address == value);
+    if (pair) {
+        const meta = (pair[0] && pair[0].meta) || {};
+        web3FromSource(meta.source as string)
+          .catch((): null => null)
+          .then((injected) => setAccountSigner(injected?.signer))
+          .catch(console.error);
+
+    }
+  }, [injectedAccounts]);
 
   // FLIPPER GET(): Call Flipper get() function (view only, no funds are expended)
   const _onClickGetContractValue = useCallback(async (): Promise<void> => {
@@ -174,7 +184,7 @@ function App ({ className }: Props): React.ReactElement<Props> | null {
                 address,
                 meta: {
                   ...meta,
-                  name: `${meta.name || 'unknown'} (${meta.source === 'polkadot-js' ? 'extension' : meta.source})`,
+                  name: `${meta.name || 'unknown'} (${meta.source})`,
                   whenCreated
                 }
               })
